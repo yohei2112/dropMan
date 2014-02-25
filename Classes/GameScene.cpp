@@ -4,6 +4,7 @@
 #include "SimpleAudioEngine.h"
 USING_NS_CC;
 using namespace CocosDenshion;
+
 CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
@@ -54,7 +55,6 @@ bool GameScene::init()
 
     kabeNode = CCSpriteBatchNode::create("kabe.png");
     this->addChild(kabeNode, kZOrder_Enemy);
-CCLog ("init");
     soundIds = CCDictionary::create();
     soundIds->setObject(CCInteger::create(1), "dead");
 /*
@@ -69,9 +69,8 @@ CCLog ("init");
     isScroll = false;
     isTouch = false;
 
-    makeCharacter();
+    setTitle();
     makeBackground();
-    makeLabel();
 
     return true;
 }
@@ -106,6 +105,24 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
 {
     isTouch = false;
 
+}
+
+void GameScene::setTitle()
+{
+    title = CCSprite::create("title.png");
+    title->setPosition(ccp(winSize.width * 0.5, winSize.height * 0.7));
+    this->addChild(title, kZOrder_Title);
+    titleLabel = CCLabelTTF::create("TAP TO START", "", NUMBER_FONT_SIZE);
+    titleLabel->setPosition(ccp(winSize.width * 0.5, winSize.height * 0.5));
+    this->addChild(titleLabel, kZOrder_Title);
+
+
+}
+
+void GameScene::deleteTitle()
+{
+    deleteSprite(title);
+    titleLabel->removeFromParentAndCleanup(true);
 }
 
 void GameScene::makeCharacter()
@@ -199,8 +216,10 @@ void GameScene::update(float dt)
 
 void GameScene::startGame()
 {
-    isGame = true;
+    deleteTitle();
     AdMobUtil::hideAdView();
+    makeLabel();
+    isGame = true;
     scheduleUpdate();
     dropCharacter();
 }
@@ -239,13 +258,6 @@ void GameScene::scrollAll()
         highScoreLabel->setPosition(ccp(winSize.width - highScoreLabel->getContentSize().width * 0.5, winSize.height - highScoreLabel->getContentSize().height * 0.5));
         highScoreLabel->setString(highScoreString->getCString());
     }
-*/
-/*
-    if(dropSoundId > 0)
-    {
-        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
-    }
-    scrollSoundId = SimpleAudioEngine::sharedEngine()->playEffect("scroll.wav");
 */
     isScroll = true;
     setEnemy();
@@ -481,13 +493,7 @@ void GameScene::gameOver()
 void GameScene::gameOverAnimation()
 {
     this->setTouchEnabled(false);
-/*
-    if(dropSoundId > 0)
-    {
-        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
-    }
-    deadSoundId = SimpleAudioEngine::sharedEngine()->playEffect("dead.wav");
-*/
+
     character->setVisible(false);
     deadSprites = CCArray::create();
     CCSprite* deadSprite;
@@ -546,27 +552,5 @@ void GameScene::gameOverAnimation()
 void GameScene::setTcouchEnable()
 {
     this->setTouchEnabled(true);
-}
-
-void GameScene::playSound(CCString* name)
-{
-    CCInteger* id;
-        CCLog ("hugahuga");
-
-    if(soundIds->objectForKey("huga"))
-    {
-///        CCLog ("huga%s",name->getCString());
-//        CCLog ("update highScore :%d to %d", highScore, scoreCount);
-//        id = (CCInteger*)soundIds->objectForKey(name->getCString());
-//        SimpleAudioEngine::sharedEngine()->stopEffect(id->getValue());
-    }
-
-//    id = (CCInteger*)
-    SimpleAudioEngine::sharedEngine()->playEffect("dead.wav");
-//    soundIds->setObject(id, "dead");
-}
-
-void GameScene::stopSound(CCString* name)
-{
 }
 

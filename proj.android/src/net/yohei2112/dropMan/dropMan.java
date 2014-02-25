@@ -40,8 +40,8 @@ public class dropMan extends Cocos2dxActivity{
 	
 	private static AdView adView;
 	private static Cocos2dxActivity me = null;
-	   private final int WC = FrameLayout.LayoutParams.WRAP_CONTENT; 
-	   private final int MP = FrameLayout.LayoutParams.MATCH_PARENT;
+	private final int WC = FrameLayout.LayoutParams.WRAP_CONTENT; 
+	private final int MP = FrameLayout.LayoutParams.MATCH_PARENT;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);	
 		adView = new AdView(this, AdSize.BANNER, "");

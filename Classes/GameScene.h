@@ -35,6 +35,7 @@ protected:
         kZOrder_Score,
         kZOrder_PlayButton,
         kZOrder_GameOver,
+        kZOrder_Title,
     };
 
     CCLabelTTF* scoreLabel;
@@ -42,9 +43,11 @@ protected:
     CCLabelTTF* winSizeLabel;
     CCLabelTTF* flagLabel;
     CCLabelTTF* gameOverLabel;
+    CCLabelTTF* titleLabel;
     CCSprite* character;
     CCSprite* backgroundCurrent;
     CCSprite* backgroundNext;
+    CCSprite* title;
     CCSpriteBatchNode* backgroundNode;
     CCSpriteBatchNode* togeNode;
     CCSpriteBatchNode* kabeNode;
@@ -75,6 +78,8 @@ protected:
     void setTcouchEnable();
     void playSound(CCString* name);
     void stopSound(CCString* name);
+    void setTitle();
+    void deleteTitle();
 
     void update(float dt);
 
