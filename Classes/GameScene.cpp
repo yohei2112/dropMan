@@ -1,8 +1,9 @@
 #include "GameScene.h"
 #include "AppMacros.h"
-
+#include "AdMobUtil.h"
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
-
+using namespace CocosDenshion;
 CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
@@ -33,6 +34,13 @@ bool GameScene::init()
     scrollCount = userDefault->getIntegerForKey("scrollCount", 0);
     playCount = userDefault->getIntegerForKey("playCount", 0);
 
+/*
+    SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
+    SimpleAudioEngine::sharedEngine()->preloadEffect("dead.wav");
+    SimpleAudioEngine::sharedEngine()->preloadEffect("scroll.wav");
+    SimpleAudioEngine::sharedEngine()->preloadEffect("drop.wav");
+*/
+
     scoreCount = 0;
     this->removeAllChildrenWithCleanup(true);
 
@@ -46,13 +54,21 @@ bool GameScene::init()
 
     kabeNode = CCSpriteBatchNode::create("kabe.png");
     this->addChild(kabeNode, kZOrder_Enemy);
-
+CCLog ("init");
+    soundIds = CCDictionary::create();
+    soundIds->setObject(CCInteger::create(1), "dead");
+/*
+    soundIds->setObject(2, "drop");
+    soundIds->setObject(3, "scroll");
+*/
     this->setTouchEnabled(true);
     this->setTouchMode(kCCTouchesOneByOne);
+
 
     isGame = false;
     isScroll = false;
     isTouch = false;
+
     makeCharacter();
     makeBackground();
     makeLabel();
@@ -151,16 +167,16 @@ void GameScene::makeLabel()
     flagLabel->setPosition(ccp(winSize.width - flagLabel->getContentSize().width, flagLabel->getContentSize().height));
     this->addChild(flagLabel, kZOrder_Score);
 */
-    CCString* scoreString = CCString::createWithFormat("%d", scoreCount);
+    CCString* scoreString = CCString::createWithFormat("stage:%02d", scoreCount);
     scoreLabel = CCLabelTTF::create(scoreString->getCString(), "", NUMBER_FONT_SIZE);
-    scoreLabel->setPosition(ccp(winSize.width/2, winSize.height - scoreLabel->getContentSize().height));
+    scoreLabel->setPosition(ccp(winSize.width - scoreLabel->getContentSize().width * 0.5, winSize.height - scoreLabel->getContentSize().height * 0.5));
     this->addChild(scoreLabel, kZOrder_Score);
-
+/*
     CCString* highScoreString = CCString::createWithFormat("HIGH:%d", highScore);
     highScoreLabel = CCLabelTTF::create(highScoreString->getCString(), "", NUMBER_FONT_SIZE);
     highScoreLabel->setPosition(ccp(winSize.width - highScoreLabel->getContentSize().width * 0.5, winSize.height - highScoreLabel->getContentSize().height * 0.5));
     this->addChild(highScoreLabel, kZOrder_Score);
-
+*/
 }
 
 void GameScene::update(float dt)
@@ -184,6 +200,7 @@ void GameScene::update(float dt)
 void GameScene::startGame()
 {
     isGame = true;
+    AdMobUtil::hideAdView();
     scheduleUpdate();
     dropCharacter();
 }
@@ -195,6 +212,13 @@ void GameScene::dropCharacter()
         return;
     }
     isScroll = false;
+/*
+    if(dropSoundId > 0)
+    {
+        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
+    }
+    dropSoundId = SimpleAudioEngine::sharedEngine()->playEffect("drop.wav");
+*/
     CCMoveTo* dropCharacter = CCMoveTo::create(ONE_SCREEN_DROP_TIME, ccp(character->getPosition().x, 0));
     CCActionInterval* easeAction = CCEaseIn::create(dropCharacter, DROP_EASE_PARAM);
 
@@ -206,16 +230,23 @@ void GameScene::dropCharacter()
 void GameScene::scrollAll()
 {
     scoreCount++;
-    CCString* scoreString = CCString::createWithFormat("%d", scoreCount);
+    CCString* scoreString = CCString::createWithFormat("stage:%02d", scoreCount);
     scoreLabel->setString(scoreString->getCString());
-
+/*
     if (scoreCount > highScore)
     {
         CCString* highScoreString = CCString::createWithFormat("HIGH:%d", scoreCount);
         highScoreLabel->setPosition(ccp(winSize.width - highScoreLabel->getContentSize().width * 0.5, winSize.height - highScoreLabel->getContentSize().height * 0.5));
         highScoreLabel->setString(highScoreString->getCString());
     }
-
+*/
+/*
+    if(dropSoundId > 0)
+    {
+        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
+    }
+    scrollSoundId = SimpleAudioEngine::sharedEngine()->playEffect("scroll.wav");
+*/
     isScroll = true;
     setEnemy();
     setKabe();
@@ -302,7 +333,7 @@ void GameScene::setKabe()
 {
     int kabePosisionX;
     int safetyAreaWidth = character->getContentSize().width * SAFETY_AREA_WIDTH_PARAM;
-    kabePosisionX = (arc4random()%(int)winSize.width * 0.5) - safetyAreaWidth;
+    kabePosisionX = (arc4random()%(int)winSize.width * 0.5) - safetyAreaWidth - winSize.width * 0.1;
 CCLog ("debug:safetyAreaWidth=: %d", safetyAreaWidth);
 CCLog ("debug:kabePos=: %d", kabePosisionX);
 
@@ -350,13 +381,25 @@ void GameScene::setEnemy()
 
 void GameScene::checkCollision()
 {
-
-    CCRect characterRect = CCRectMake(
-        character->getPosition().x - character->getContentSize().width * 0.5,
-        character->getPosition().y - character->getContentSize().height * 0.5 + character->getContentSize().height * 0.25,
-        character->getContentSize().width,
-        character->getContentSize().height * 0.5
-        );
+    CCRect characterRect;
+    if (isTouch)
+    {
+        characterRect = CCRectMake(
+            character->getPosition().x - character->getContentSize().width * 0.2,
+            character->getPosition().y - character->getContentSize().height * 0.2,
+            character->getContentSize().width * 0.4,
+            character->getContentSize().height * 0.4
+            );
+    }
+    else
+    {
+        characterRect = CCRectMake(
+            character->getPosition().x - character->getContentSize().width * 0.3,
+            character->getPosition().y - character->getContentSize().height * 0.3,
+            character->getContentSize().width * 0.6,
+            character->getContentSize().height * 0.6
+            );
+    }
 
     CCSprite* sprite;
     CCObject* child = NULL;
@@ -402,7 +445,7 @@ void GameScene::checkCollision()
 void GameScene::gameOver()
 {
     isGame = false;
-
+    AdMobUtil::showAdView();
     gameOverAnimation();
 
     CCObject* child = NULL;
@@ -412,11 +455,6 @@ void GameScene::gameOver()
         sprite->stopAllActions();
     }
     character->stopAllActions();
-
-    CCSprite* gameOverSprite = CCSprite::create("gameOver.png");
-    gameOverSprite->setPosition(ccp(winSize.width * 0.5, winSize.height * 0.5));
-    gameOverSprite->setScale(3);
-//    this->addChild(gameOverSprite);
 
     CCUserDefault* userDefault = CCUserDefault::sharedUserDefault();
 
@@ -432,7 +470,7 @@ void GameScene::gameOver()
     userDefault->setIntegerForKey("scrollCount", scrollCount);
     userDefault->flush();
 
-    CCString* gameOverString = CCString::createWithFormat("GAME OVER\n\rSCORE:%d\n\rHIGH SCORE:%d", scoreCount, highScore);
+    CCString* gameOverString = CCString::createWithFormat("GAME OVER\n\rSCORE:%d\n\rHIGH SCORE:%d\n\rTAP TO RESTART", scoreCount, highScore);
     gameOverLabel = CCLabelTTF::create(gameOverString->getCString(), "", NUMBER_FONT_SIZE);
     gameOverLabel->setPosition(ccp(winSize.width * 0.5, winSize.height * 0.5));
     this->addChild(gameOverLabel, kZOrder_Score);
@@ -443,6 +481,13 @@ void GameScene::gameOver()
 void GameScene::gameOverAnimation()
 {
     this->setTouchEnabled(false);
+/*
+    if(dropSoundId > 0)
+    {
+        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
+    }
+    deadSoundId = SimpleAudioEngine::sharedEngine()->playEffect("dead.wav");
+*/
     character->setVisible(false);
     deadSprites = CCArray::create();
     CCSprite* deadSprite;
@@ -501,5 +546,27 @@ void GameScene::gameOverAnimation()
 void GameScene::setTcouchEnable()
 {
     this->setTouchEnabled(true);
+}
+
+void GameScene::playSound(CCString* name)
+{
+    CCInteger* id;
+        CCLog ("hugahuga");
+
+    if(soundIds->objectForKey("huga"))
+    {
+///        CCLog ("huga%s",name->getCString());
+//        CCLog ("update highScore :%d to %d", highScore, scoreCount);
+//        id = (CCInteger*)soundIds->objectForKey(name->getCString());
+//        SimpleAudioEngine::sharedEngine()->stopEffect(id->getValue());
+    }
+
+//    id = (CCInteger*)
+    SimpleAudioEngine::sharedEngine()->playEffect("dead.wav");
+//    soundIds->setObject(id, "dead");
+}
+
+void GameScene::stopSound(CCString* name)
+{
 }
 

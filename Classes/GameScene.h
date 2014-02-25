@@ -49,6 +49,7 @@ protected:
     CCSpriteBatchNode* togeNode;
     CCSpriteBatchNode* kabeNode;
     CCArray* deadSprites;
+    CCDictionary* soundIds;
     CCSize winSize;
     CCPoint location;
 
@@ -72,6 +73,8 @@ protected:
     void checkCollision();
     void gameOverAnimation();
     void setTcouchEnable();
+    void playSound(CCString* name);
+    void stopSound(CCString* name);
 
     void update(float dt);
 
@@ -79,6 +82,10 @@ protected:
     int highScore;
     int scrollCount;
     int playCount;
+    int deadSoundId;
+    int dropSoundId;
+    int scrollSoundId;
+    
     bool isGame;
     bool isScroll;
     bool isTouch;

@@ -30,19 +30,17 @@ bool AppDelegate::applicationDidFinishLaunching() {
         searchPath.push_back(largeResource.directory);
         pDirector->setContentScaleFactor(MIN(largeResource.size.height / designResolutionSize.height, largeResource.size.width / designResolutionSize.width));
     }
-//    else if (frameSize.height > smallResource.size.height)
-    else //Sサイズの画像を用意してないのでLとMの2択にする
+    else if (frameSize.height > smallResource.size.height)
     {
         searchPath.push_back(mediumResource.directory);
         pDirector->setContentScaleFactor(MIN(mediumResource.size.height / designResolutionSize.height, mediumResource.size.width / designResolutionSize.width));
     }
-/*
     else
     {
         searchPath.push_back(smallResource.directory);
         pDirector->setContentScaleFactor(MIN(smallResource.size.height / designResolutionSize.height, smallResource.size.width / designResolutionSize.width));
     }
-*/
+
     CCFileUtils::sharedFileUtils()->setSearchPaths(searchPath);
 
     // turn on display FPS
