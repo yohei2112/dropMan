@@ -1,7 +1,14 @@
 #include "GameScene.h"
 #include "AppMacros.h"
-#include "AdMobUtil.h"
 #include "SimpleAudioEngine.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
+#define ENABLE_ADMOB
+#include "AdMobUtil.h"
+
+#endif
+
 USING_NS_CC;
 using namespace CocosDenshion;
 
@@ -217,7 +224,11 @@ void GameScene::update(float dt)
 void GameScene::startGame()
 {
     deleteTitle();
+
+#ifdef ENABLE_ADMOB
     AdMobUtil::hideAdView();
+#endif
+
     makeLabel();
     isGame = true;
     scheduleUpdate();
@@ -457,7 +468,11 @@ void GameScene::checkCollision()
 void GameScene::gameOver()
 {
     isGame = false;
+
+#ifdef ENABLE_ADMOB
     AdMobUtil::showAdView();
+#endif
+
     gameOverAnimation();
 
     CCObject* child = NULL;
