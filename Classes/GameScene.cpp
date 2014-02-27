@@ -42,13 +42,6 @@ bool GameScene::init()
     scrollCount = userDefault->getIntegerForKey("scrollCount", 0);
     playCount = userDefault->getIntegerForKey("playCount", 0);
 
-/*
-    SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
-    SimpleAudioEngine::sharedEngine()->preloadEffect("dead.wav");
-    SimpleAudioEngine::sharedEngine()->preloadEffect("scroll.wav");
-    SimpleAudioEngine::sharedEngine()->preloadEffect("drop.wav");
-*/
-
     scoreCount = 0;
     this->removeAllChildrenWithCleanup(true);
 
@@ -62,12 +55,7 @@ bool GameScene::init()
 
     kabeNode = CCSpriteBatchNode::create("kabe.png");
     this->addChild(kabeNode, kZOrder_Enemy);
-    soundIds = CCDictionary::create();
-    soundIds->setObject(CCInteger::create(1), "dead");
-/*
-    soundIds->setObject(2, "drop");
-    soundIds->setObject(3, "scroll");
-*/
+
     this->setTouchEnabled(true);
     this->setTouchMode(kCCTouchesOneByOne);
 
@@ -178,29 +166,10 @@ void GameScene::makeBackground()
 
 void GameScene::makeLabel()
 {
-/*
-    CCString* winSizeString = CCString::createWithFormat("winSize:x=%d y=%d\n\rframeSize:x=%d y=%d\n\rresolutionSize:x=%d y=%d", (int)winSize.width, (int)winSize.height,
-    (int)CCEGLView::sharedOpenGLView()->getFrameSize().width, (int)CCEGLView::sharedOpenGLView()->getFrameSize().height,
-    (int)CCEGLView::sharedOpenGLView()->getDesignResolutionSize().width, (int)CCEGLView::sharedOpenGLView()->getDesignResolutionSize().height);
-    winSizeLabel = CCLabelTTF::create(winSizeString->getCString(), "", NUMBER_FONT_SIZE);
-    winSizeLabel->setPosition(ccp(winSize.width * 0.5, winSize.height * 0.5));
-    this->addChild(winSizeLabel, kZOrder_Score);
-/*
-    CCString* flagString = CCString::createWithFormat("isScroll=%d", isScroll);
-    flagLabel = CCLabelTTF::create(flagString->getCString(), "", NUMBER_FONT_SIZE * 0.5);
-    flagLabel->setPosition(ccp(winSize.width - flagLabel->getContentSize().width, flagLabel->getContentSize().height));
-    this->addChild(flagLabel, kZOrder_Score);
-*/
     CCString* scoreString = CCString::createWithFormat("stage:%02d", scoreCount);
     scoreLabel = CCLabelTTF::create(scoreString->getCString(), "", NUMBER_FONT_SIZE);
     scoreLabel->setPosition(ccp(winSize.width - scoreLabel->getContentSize().width * 0.5, winSize.height - scoreLabel->getContentSize().height * 0.5));
     this->addChild(scoreLabel, kZOrder_Score);
-/*
-    CCString* highScoreString = CCString::createWithFormat("HIGH:%d", highScore);
-    highScoreLabel = CCLabelTTF::create(highScoreString->getCString(), "", NUMBER_FONT_SIZE);
-    highScoreLabel->setPosition(ccp(winSize.width - highScoreLabel->getContentSize().width * 0.5, winSize.height - highScoreLabel->getContentSize().height * 0.5));
-    this->addChild(highScoreLabel, kZOrder_Score);
-*/
 }
 
 void GameScene::update(float dt)
@@ -230,6 +199,7 @@ void GameScene::startGame()
 #endif
 
     makeLabel();
+    makeCharacter();
     isGame = true;
     scheduleUpdate();
     dropCharacter();
@@ -242,13 +212,7 @@ void GameScene::dropCharacter()
         return;
     }
     isScroll = false;
-/*
-    if(dropSoundId > 0)
-    {
-        SimpleAudioEngine::sharedEngine()->stopEffect(dropSoundId);
-    }
-    dropSoundId = SimpleAudioEngine::sharedEngine()->playEffect("drop.wav");
-*/
+
     CCMoveTo* dropCharacter = CCMoveTo::create(ONE_SCREEN_DROP_TIME, ccp(character->getPosition().x, 0));
     CCActionInterval* easeAction = CCEaseIn::create(dropCharacter, DROP_EASE_PARAM);
 
@@ -262,14 +226,7 @@ void GameScene::scrollAll()
     scoreCount++;
     CCString* scoreString = CCString::createWithFormat("stage:%02d", scoreCount);
     scoreLabel->setString(scoreString->getCString());
-/*
-    if (scoreCount > highScore)
-    {
-        CCString* highScoreString = CCString::createWithFormat("HIGH:%d", scoreCount);
-        highScoreLabel->setPosition(ccp(winSize.width - highScoreLabel->getContentSize().width * 0.5, winSize.height - highScoreLabel->getContentSize().height * 0.5));
-        highScoreLabel->setString(highScoreString->getCString());
-    }
-*/
+
     isScroll = true;
     setEnemy();
     setKabe();
