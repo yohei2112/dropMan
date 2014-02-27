@@ -234,3 +234,5 @@ DerivedData
 .idea/
 *.hmap
 *.xccheckout
+
+!proj.ios/Prefix.pch
