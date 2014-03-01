@@ -77,6 +77,8 @@ void GameScene::onEnter()
 
     this->setTouchEnabled(true);
     this->setTouchMode(kCCTouchesOneByOne);
+
+    scheduleUpdate();
 }
 
 bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
@@ -206,7 +208,6 @@ void GameScene::startGame()
     makeLabel();
     makeCharacter();
     isGame = true;
-    scheduleUpdate();
     dropCharacter();
 }
 
