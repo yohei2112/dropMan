@@ -75,7 +75,6 @@ protected:
     void setKabe();
     void checkCollision();
     void gameOverAnimation();
-    void setTcouchEnable();
     void playSound(CCString* name);
     void stopSound(CCString* name);
     void setTitle();

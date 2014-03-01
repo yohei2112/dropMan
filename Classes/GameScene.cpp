@@ -470,8 +470,6 @@ void GameScene::gameOver()
 
 void GameScene::gameOverAnimation()
 {
-    this->setTouchEnabled(false);
-
     character->setVisible(false);
     deadSprites = CCArray::create();
     CCSprite* deadSprite;
@@ -483,8 +481,6 @@ void GameScene::gameOverAnimation()
     }
     CCAnimation* animation;
     CCAnimate* animateAction;
-
-    CCCallFuncN* func = CCCallFuncN::create(this, callfuncN_selector(GameScene::setTcouchEnable));
 
     CCMoveBy* moveAction;
     int distance;
@@ -513,22 +509,9 @@ void GameScene::gameOverAnimation()
         animation->setLoops(3);
 
         animateAction = CCAnimate::create(animation);
-        if (i == 0)
-        {
-            deadSprite->runAction(CCSpawn::create(moveAction, CCSequence::create(animateAction, func, NULL), NULL));
-        }
-        else
-        {
-            deadSprite->runAction(CCSpawn::create(moveAction, animateAction, NULL));
-        }
+        deadSprite->runAction(CCSpawn::create(moveAction, animateAction, NULL));
         i++;
 
     }
 
 }
-
-void GameScene::setTcouchEnable()
-{
-    this->setTouchEnabled(true);
-}
-
