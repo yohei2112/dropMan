@@ -56,10 +56,6 @@ bool GameScene::init()
     kabeNode = CCSpriteBatchNode::create("kabe.png");
     this->addChild(kabeNode, kZOrder_Enemy);
 
-    this->setTouchEnabled(true);
-    this->setTouchMode(kCCTouchesOneByOne);
-
-
     isGame = false;
     isScroll = false;
     isTouch = false;
@@ -75,6 +71,14 @@ GameScene::GameScene()
 {
 }
 
+void GameScene::onEnter()
+{
+    CCLayer::onEnter();
+
+    this->setTouchEnabled(true);
+    this->setTouchMode(kCCTouchesOneByOne);
+}
+
 bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
 {
     isTouch = true;
@@ -87,6 +91,7 @@ bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
     location = pTouch->getLocationInView();
     location = CCDirector::sharedDirector()->convertToGL(location);
 
+    return true;
 }
 
 void GameScene::ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent)
