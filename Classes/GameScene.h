@@ -80,7 +80,6 @@ protected:
     void stopSound(CCString* name);
     void setTitle();
     void deleteTitle();
-    void toggleFlag(bool flag);
 
     void update(float dt);
 
