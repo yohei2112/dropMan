@@ -94,7 +94,9 @@ protected:
     bool isGame;
     bool isScroll;
     bool isTouch;
+    bool isTouchable;
 
+    virtual void onEnter();
     virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);

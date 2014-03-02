@@ -56,13 +56,10 @@ bool GameScene::init()
     kabeNode = CCSpriteBatchNode::create("kabe.png");
     this->addChild(kabeNode, kZOrder_Enemy);
 
-    this->setTouchEnabled(true);
-    this->setTouchMode(kCCTouchesOneByOne);
-
-
     isGame = false;
     isScroll = false;
     isTouch = false;
+    isTouchable = true;
 
     setTitle();
     makeBackground();
@@ -75,8 +72,22 @@ GameScene::GameScene()
 {
 }
 
+void GameScene::onEnter()
+{
+    CCLayer::onEnter();
+
+    this->setTouchEnabled(true);
+    this->setTouchMode(kCCTouchesOneByOne);
+
+    scheduleUpdate();
+}
+
 bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
 {
+    if (!isTouchable)
+    {
+        return true;
+    }
     isTouch = true;
     if(!isGame)
     {
@@ -87,10 +98,15 @@ bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
     location = pTouch->getLocationInView();
     location = CCDirector::sharedDirector()->convertToGL(location);
 
+    return true;
 }
 
 void GameScene::ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent)
 {
+    if (!isTouchable)
+    {
+        return;
+    }
     location = pTouch->getLocationInView();
     location = CCDirector::sharedDirector()->convertToGL(location);
 
@@ -98,6 +114,10 @@ void GameScene::ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent)
 
 void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
 {
+    if (!isTouchable)
+    {
+        return;
+    }
     isTouch = false;
 
 }
@@ -201,7 +221,6 @@ void GameScene::startGame()
     makeLabel();
     makeCharacter();
     isGame = true;
-    scheduleUpdate();
     dropCharacter();
 }
 
@@ -464,7 +483,7 @@ void GameScene::gameOver()
 
 void GameScene::gameOverAnimation()
 {
-    this->setTouchEnabled(false);
+    isTouchable = false;
 
     character->setVisible(false);
     deadSprites = CCArray::create();
@@ -523,6 +542,6 @@ void GameScene::gameOverAnimation()
 
 void GameScene::setTcouchEnable()
 {
-    this->setTouchEnabled(true);
+    isTouchable = true;
 }
 
